@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DataContracts;
 using MoreLinq;
 
@@ -33,7 +34,7 @@ namespace MaximumPath.PathFinders
             };
 
             // Assign children
-            for (int levelIndex = 0; levelIndex < model.Levels.Length - 1; levelIndex++)
+            Parallel.For(0, model.Levels.Length - 1, levelIndex =>
             {
                 var currentLevel = model.Levels[levelIndex];
                 var levelBelow = model.Levels[levelIndex + 1];
@@ -46,7 +47,7 @@ namespace MaximumPath.PathFinders
                         levelBelow.Nodes[nodeIndex + 1]
                     };
                 }
-            }
+            });
 
             return model;
         }
@@ -55,12 +56,12 @@ namespace MaximumPath.PathFinders
         {
             for (var i = internalPyramidModel.Levels.Length - 1; i >= 0; i--)
             {
-                foreach (var currentNode in internalPyramidModel.Levels[i].Nodes)
+                Parallel.ForEach(internalPyramidModel.Levels[i].Nodes, currentNode =>
                 {
                     if (currentNode.IsBottomOfThePyramid())
                     {
                         currentNode.TheoreticalSumOfLevelsBelow = currentNode.NodeValue;
-                        continue;
+                        return;
                     }
 
                     var suitableChildren = GetSuitableChildNodes(currentNode).ToArray();
@@ -74,7 +75,7 @@ namespace MaximumPath.PathFinders
                         var bestPathValue = suitableChildren.Max(x => x.TheoreticalSumOfLevelsBelow.Value);
                         currentNode.TheoreticalSumOfLevelsBelow = currentNode.NodeValue + bestPathValue;
                     }
-                }
+                });
             }
         }
 
