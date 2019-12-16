@@ -25,7 +25,7 @@ namespace IntegrationTests
             if (result.Path != null)
             {
                 OutputBuilder.Append($"Max sum: {result.MaximumPossibleSum}");
-                OutputBuilder.AppendLine();
+                OutputBuilder.Append("\n");
             }
         }
     }
